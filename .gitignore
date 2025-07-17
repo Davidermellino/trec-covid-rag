@@ -1,0 +1,5 @@
+# Cartelle da ignorare
+__pycache__/
+.dist/
+trec-covid/
+dense_retriveal/embeddings.npy
