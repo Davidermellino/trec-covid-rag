@@ -1,5 +1,6 @@
 # Cartelle da ignorare
 __pycache__/
 .dist/
+.DS_Store
 trec-covid/
 dense_retriveal/embeddings.npy
