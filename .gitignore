@@ -3,4 +3,4 @@ __pycache__/
 .dist/
 .DS_Store
 trec-covid/
-dense_retriveal/embeddings.npy
+dense_retrieval/embeddings.npy
