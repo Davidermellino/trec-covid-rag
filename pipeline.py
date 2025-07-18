@@ -18,40 +18,48 @@ embeddings_file_path = 'dense_retrieval/embeddings.npy'
 queries_file_path = 'trec-covid/queries.jsonl'
 qrels_file_path = 'trec-covid/qrels/test.tsv'
 
-
-if __name__ == "__main__":
-    
-
-    dense_retrieval = DenseRetrieval(file_path, model_name)
-    hyde = HyDE(model="llama3.2:3b")
-
+def load_embeddings(file_path):
     if os.path.exists(embeddings_file_path):
         embeddings = np.load(embeddings_file_path)
     else:
         embeddings = dense_retrieval.encode_documents()
         np.save(embeddings_file_path, embeddings.numpy())
+    return embeddings
 
-    evaluator = Evaluation(
+
+
+if __name__ == "__main__":
+    
+    embeddings = load_embeddings(embeddings_file_path)
+
+    dense_retrieval = DenseRetrieval(file_path, model_name)
+    hyde = HyDE(model="tinyllama:latest")
+
+    
+        
+
+    evaluator_dense_retrieval = Evaluation(
         method_name="Dense Retrieval",
         retrieval_function=dense_retrieval.search,
         query_path=queries_file_path,
         qrels_path=qrels_file_path
     )
     
+    evaluator_hyde = Evaluation(
+        method_name="HyDE Retrieval",
+        retrieval_function=hyde.hyde_retrieval,
+        query_path=queries_file_path,
+        qrels_path=qrels_file_path
+    )
     
-    average_results = evaluator.evaluate_queries( embeddings)
     
-    for metric, values in average_results.items():
+    average_results_dense_retrieval = evaluator_dense_retrieval.evaluate_queries(embeddings)
+    average_results_hyde = evaluator_hyde.evaluate_queries(embeddings)
+    
+    print("\nDense Retrieval Results:")
+    for metric, values in average_results_dense_retrieval.items():
         print(f"{metric}: {np.mean(values):.4f}")
-    #results = evaluate_queries('trec-covid/queries.jsonl', embeddings, dense_retrieval_model=dense_retrieval)
-
-    print("Testing HyDE retrieval...")
-    test_hyde_results = hyde.hyde_retrieval("what is the origin of COVID-19",embeddings, top_k=3)
-
-    print(f"Hypothetical document:")
-    print(f"{test_hyde_results[0]['hypothetical_doc'][:200]}...")
-    print(f"\nTop 3 HyDE results:")
-    for i, result in enumerate(test_hyde_results):
-        print(f"{i+1}. Score: {result['score']:.3f}")
-        print(f"   Title: {result['title'][:80]}...")
-        print()
+        
+    print("\nHyDE Retrieval Results:")
+    for metric, values in average_results_hyde.items():
+        print(f"{metric}: {np.mean(values):.4f}")
