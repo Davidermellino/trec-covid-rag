@@ -8,22 +8,24 @@ from tqdm import tqdm
 from collections import defaultdict
 
 
+
 from dense_retrieval.dense_retrieval import DenseRetrieval
 from HyDE.HyDE import HyDE
+from LLM_as_validator.LLM_as_validator import LLMValidation
 from evaluation import Evaluation
 
-model_name = "sentence-transformers/all-MiniLM-L6-v2"
+model_name_tokenizer = "sentence-transformers/all-MiniLM-L6-v2"
 file_path = 'trec-covid/corpus.jsonl'
 embeddings_file_path = 'dense_retrieval/embeddings.npy'
 queries_file_path = 'trec-covid/queries.jsonl'
 qrels_file_path = 'trec-covid/qrels/test.tsv'
 
 def load_embeddings(file_path):
-    if os.path.exists(embeddings_file_path):
-        embeddings = np.load(embeddings_file_path)
+    if os.path.exists(file_path):
+        embeddings = np.load(file_path)
     else:
         embeddings = dense_retrieval.encode_documents()
-        np.save(embeddings_file_path, embeddings.numpy())
+        np.save(file_path, embeddings.numpy())
     return embeddings
 
 
@@ -32,8 +34,9 @@ if __name__ == "__main__":
     
     embeddings = load_embeddings(embeddings_file_path)
 
-    dense_retrieval = DenseRetrieval(file_path, model_name)
+    dense_retrieval = DenseRetrieval(file_path, model_name_tokenizer)
     hyde = HyDE(model="tinyllama:latest")
+    llm_validation = LLMValidation(corpus_file=file_path,model_name_tokenizer=model_name_tokenizer, model_name="tinyllama:latest")
 
 
     #EVALUATION OF RETRIEVAL METHODS
@@ -42,14 +45,16 @@ if __name__ == "__main__":
         method_name="Dense Retrieval",
         retrieval_function=dense_retrieval.search,
         query_path=queries_file_path,
-        qrels_path=qrels_file_path
+        qrels_path=qrels_file_path,
+        llm_validator=llm_validation
     )
     
     evaluator_hyde = Evaluation(
         method_name="HyDE Retrieval",
         retrieval_function=hyde.hyde_retrieval,
         query_path=queries_file_path,
-        qrels_path=qrels_file_path
+        qrels_path=qrels_file_path,
+        llm_validator=llm_validation
     )
     
     

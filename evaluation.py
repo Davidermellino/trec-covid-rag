@@ -4,16 +4,19 @@ import pandas as pd
 from tqdm import tqdm
 import json
 
+from LLM_as_validator.LLM_as_validator import LLMValidation
+
 
 class Evaluation:
 
-    def __init__(self, method_name, retrieval_function, query_path, qrels_path):
+    def __init__(self, method_name, retrieval_function, query_path, qrels_path, llm_validator):
         self.method_name = method_name
         self.retrieval_function = retrieval_function
         self.query_path = query_path
         self.qrels_path = qrels_path
+        self.llm_validator = llm_validator
         
-        self.results = {"map": [], "ndcg@10": [], "precision@5": [], "precision@10": []}
+        self.results = {"map": [], "ndcg@10": [], "precision@5": [], "precision@10": [], "llm_validation": []}
         self.queries = self.load_queries()
         self.qrels = self.load_qrels()
 
@@ -132,11 +135,14 @@ class Evaluation:
             ndcg_score = self.calculate_ndcg(retrieved_docs, qrels_dict, k=10)
             p5_score = self.calculate_precision_at_k(retrieved_docs, qrels_dict, k=5)
             p10_score = self.calculate_precision_at_k(retrieved_docs, qrels_dict, k=10)
+            llm_validation = self.llm_validator.search_val(query_text, embeddings, top_k=5)
+            print(llm_validation)
 
             self.results['map'].append(map_score)
             self.results['ndcg@10'].append(ndcg_score)
             self.results['precision@5'].append(p5_score)
             self.results['precision@10'].append(p10_score)
+            self.results['llm_validation'].append(llm_validation)
 
             avg_results = {metric: np.mean(scores) if scores else 0.0 for metric, scores in self.results.items()}
 
