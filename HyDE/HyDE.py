@@ -44,3 +44,33 @@ Abstract:"""
         )
 
         return results
+    
+    def answer_with_context(self, query_text, embeddings, top_k=5):
+        """
+        Generate a final answer by retrieving relevant documents and combining them with the query.
+        This performs full HyDE + LLM answering.
+        """
+        # Step 1: Retrieve documents using HyDE
+        retrieved_docs = self.hyde_retrieval(query_text, embeddings, top_k=top_k)
+
+        if not retrieved_docs:
+            print("Warning: No documents retrieved, returning default message.")
+            return "No relevant documents found."
+
+        # Step 2: Combine the query with the retrieved documents
+        context = "\n\n".join([doc['text'] for doc in retrieved_docs])
+
+        prompt = f"""You are a helpful scientific assistant answering questions about COVID-19.
+
+        Context:
+        {context}
+
+        Question:
+        {query_text}
+
+        Answer:"""
+
+        # Step 3: Pass the prompt to the LLM
+        response = self.llm.complete(prompt, max_tokens=300, temperature=0.2)
+
+        return response.text if hasattr(response, 'text') else str(response)

@@ -35,8 +35,8 @@ if __name__ == "__main__":
     dense_retrieval = DenseRetrieval(file_path, model_name)
     hyde = HyDE(model="tinyllama:latest")
 
-    
-        
+
+    #EVALUATION OF RETRIEVAL METHODS
 
     evaluator_dense_retrieval = Evaluation(
         method_name="Dense Retrieval",
@@ -63,3 +63,11 @@ if __name__ == "__main__":
     print("\nHyDE Retrieval Results:")
     for metric, values in average_results_hyde.items():
         print(f"{metric}: {np.mean(values):.4f}")
+
+    #TRY RAG 
+    
+    prompt = "Can remdesivir reduce mortality in hospitalized COVID-19 patients?"
+    
+    answer = hyde.answer_with_context(prompt, embeddings=embeddings)
+
+    print(answer)
