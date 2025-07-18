@@ -21,12 +21,13 @@ class Evaluation:
         print("Loading queries...")
         queries = {}
         with open(self.query_path, "r", encoding="utf-8") as f:
-            for line in f:
+            for line in f:            
                 query = json.loads(line)
                 queries[query["_id"]] = {
                     "text": query["text"],
                     "metadata": query.get("metadata", {}),
                 }
+                
 
         return queries
 
@@ -122,6 +123,7 @@ class Evaluation:
             # Get retrieval results
             try:
                 retrieved_docs = self.retrieval_function(query_text, embeddings)
+                print(f"retrived_ids: {[ {doc['doc_id']:round(doc['score'], 2)} for doc in retrieved_docs][:5]}")
             except Exception as e:
                 print(f"Error with query {query_id}: {e}")
                 continue
