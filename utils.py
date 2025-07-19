@@ -28,6 +28,6 @@ def load_embeddings(file_path, encode_function=None):
     if os.path.exists(file_path):
         embeddings = np.load(file_path)
     else:
-        embeddings = encode_function
+        embeddings = encode_function()
         np.save(file_path, embeddings.numpy())
     return embeddings

@@ -24,7 +24,7 @@ def main():
         ids=dense_retrieval.ids,
     )
 
-    embeddings = load_embeddings(embeddings_file_path, dense_retrieval.encode_documents)
+    embeddings = load_embeddings(embeddings_file_path, dense_retrieval.encode_documents())
 
     # EVALUATION OF RETRIEVAL METHODS
     print("\n\n", "=" * 25, "EVALUATION", "=" * 25, "\n\n")
