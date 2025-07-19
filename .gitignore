@@ -8,4 +8,4 @@ bip_project/
 
 .ruff_cache/
 .venv/
-.uv.lock
+uv.lock
