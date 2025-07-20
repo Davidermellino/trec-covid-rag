@@ -78,14 +78,23 @@ unzip trec-covid.zip
 mv trec-covid/* ./trec-covid/
 ```
 
-4. **Install and setup Ollama**:
+4. **Install and setup Ollama (Linux)**:
 ```bash
-# Install Ollama (macOS/Linux)
+# Install Ollama (only for Linux)
 curl -fsSL https://ollama.ai/install.sh | sh
 
 # Pull TinyLlama model
 ollama pull tinyllama:latest
 ```
+
+If you have macOS or windows you can install it [here](https://ollama.com/download)
+and then
+
+```bash
+# Pull TinyLlama model
+ollama pull tinyllama:latest
+```
+
 
 ### Running the System
 
