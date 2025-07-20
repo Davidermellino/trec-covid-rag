@@ -89,12 +89,7 @@ ollama pull tinyllama:latest
 
 ### Running the System
 
-1. **Activate the UV environment**:
-```bash
-uv shell
-```
-
-2. **Run the main evaluation**:
+**Run the main evaluation**:
 ```bash
 uv run python main.py
 ```
